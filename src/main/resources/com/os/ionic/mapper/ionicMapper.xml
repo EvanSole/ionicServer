@@ -1,0 +1,57 @@
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+ 例如namespace="com.os.ionic.mapping.ionicMapper"就是com.os.ionic.mapping(包名)+ionicMapper(ionicMapper.xml文件去除后缀)
+-->
+<mapper namespace="com.os.ionic.mapping.ionicMapper">
+	<resultMap id="ionicMap" type="com.os.ionic.entity.IonicEntity">
+		<result property="id" column="id" javaType="Long" jdbcType="BIGINT" ></result>
+		<result property="title" column="title"></result>
+		<result property="content" column="content"></result>
+		<result property="faceImage" column="faceImage"></result>
+		<result property="remark" column="remark"></result>
+		<result property="createTime" column="create_time"></result>
+	</resultMap>
+
+    <sql id="sql_Constant">id,title,content,faceImage,remark</sql>
+
+    <!-- 根据IonicEntity查询得到一个IonicEntity对象,将实体类不为空的属性作为where条件 -->
+    <select id="getIonic" resultType="ionicMap" parameterType="com.os.ionic.entity.IonicEntity">
+        SELECT <include refid="sql_Constant"/> FROM os_ionic
+         <where>
+             <if test="id !=null ">
+                id=#{id}
+             </if>
+             <if test="userName !=null ">
+                 AND title = #{title, jdbcType=VARCHAR}
+             </if>
+        </where>
+    </select>
+
+    <!-- foreach(循环array参数) - 作为where中in的条件 -->
+    <select id="getIonicByIds" resultMap="ionicMap">
+        SELECT <include refid="sql_Constant"/> FROM os_ionic
+        WHERE id IN
+        <foreach collection="array" item="ids"  open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </select>
+
+    <!-- foreach(循环List<String>参数) - 作为where中in的条件, 如果param类型为array修改collection="array"-->
+    <select id="getIonicListByIds" resultMap="ionicMap">
+        SELECT <include refid="sql_Constant"/> FROM os_ionic
+        WHERE id IN
+        <foreach collection="list" item="IdLists"  open="(" separator="," close=")">
+            #{IdLists}
+        </foreach>
+    </select>
+
+
+    <select id="getIonicAll" resultMap="ionicMap">
+        SELECT <include refid="sql_Constant"/> FROM os_ionic
+    </select>
+
+
+</mapper>
